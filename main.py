@@ -1,14 +1,13 @@
 import os
 import datetime
 import pytz
-import schedule
 import time
-from telethon import TelegramClient, events, utils
-from telethon.tl.types import PeerChannel
+from telethon import TelegramClient
 import openai
 from flask import Flask
 from threading import Thread
 import logging
+import asyncio
 
 # --- Налаштування ---
 # Замініть на свої значення в змінних середовища на Render.com
@@ -156,13 +155,19 @@ async def main():
     await telegram_client.connect()
 
     kyiv_tz = pytz.timezone('Europe/Kiev')
-    scheduled_time = os.environ.get("SCHEDULED_TIME", "09:00")
-    schedule.every().day.at(scheduled_time).do(lambda: telegram_client.loop.create_task(process_daily_summary()))
-    schedule.every().day.at("03:00").do(delete_old_logs) # Run log cleanup at 3 AM
 
     while True:
-        schedule.run_pending()
-        time.sleep(1)
+        now_kyiv = datetime.datetime.now(kyiv_tz).time()
+        scheduled_time_obj = datetime.datetime.strptime(SCHEDULED_TIME, "%H:%M").time()
+
+        if now_kyiv.hour == scheduled_time_obj.hour and now_kyiv.minute == scheduled_time_obj.minute and now_kyiv.second < 5: # Запускати на початку хвилини
+            await process_daily_summary()
+
+        # Запускаємо очищення логів раз на добу о 3 ранку
+        if now_kyiv.hour == 3 and now_kyiv.minute == 0 and now_kyiv.second < 5:
+            delete_old_logs()
+
+        await asyncio.sleep(60) # Перевіряти кожну хвилину
 
 if __name__ == "__main__":
     import asyncio
