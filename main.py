@@ -105,6 +105,10 @@ async def process_daily_summary():
     summary_items = []
 
     for message in messages:
+        if message.text:
+            if "Повітряна тривога" in message.text or "Відбій повітряної тривоги" in message.text or "Натисність на файл speech.mp3 нижче" in message.text:
+                print(f"Пропускаю повідомлення: {message.text[:50]}...")
+                continue
         if message.text and not message.poll and not message.audio:
             print(f"Аналізую допис від {message.date.astimezone(kyiv_tz).strftime('%H:%M:%S')}: {message.text[:50]}...")
             summary = await summarize_text(message.text)
@@ -128,7 +132,7 @@ async def main():
     await telegram_client.connect()
 
     kyiv_tz = pytz.timezone('Europe/Kiev')
-    schedule.every().day.at("09:00").do(lambda: telegram_client.loop.create_task(process_daily_summary()))
+    schedule.every().day.at("22:40").do(lambda: telegram_client.loop.create_task(process_daily_summary()))
 
     while True:
         schedule.run_pending()
