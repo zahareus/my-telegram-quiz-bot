@@ -8,6 +8,7 @@ from telethon.tl.types import PeerChannel
 import openai
 from flask import Flask
 from threading import Thread
+import logging
 
 # --- Налаштування ---
 # Замініть на свої значення в змінних середовища на Render.com
@@ -16,6 +17,8 @@ TELEGRAM_API_HASH = os.environ.get("TELEGRAM_API_HASH")
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 CHANNEL_ID = int(os.environ.get("CHANNEL_ID"))  # ID каналу для аналізу
+SCHEDULED_TIME = os.environ.get("SCHEDULED_TIME", "09:00") # Час запуску бота
+LOG_FILE = "bot.log"
 
 # Назва каналу для відображення (можна отримати динамічно)
 CHANNEL_NAME = os.environ.get("CHANNEL_NAME", "цього каналу")
@@ -44,6 +47,10 @@ EMOJI_MAP = {
 # --- Ініціалізація клієнтів ---
 telegram_client = TelegramClient('samarytanin_bot', TELEGRAM_API_ID, TELEGRAM_API_HASH)
 openai.api_key = OPENAI_API_KEY
+
+# --- Налаштування логування ---
+logging.basicConfig(filename=LOG_FILE, level=logging.INFO,
+                    format='%(asctime)s - %(levelname)s - %(message)s')
 
 # --- Flask для Render.com ---
 app = Flask(__name__)
@@ -80,7 +87,7 @@ async def summarize_text(text):
         )
         return response['choices'][0]['message']['content'].strip()
     except Exception as e:
-        print(f"Помилка при самаризації OpenAI: {e}")
+        logging.error(f"Помилка при самаризації OpenAI: {e}")
         return None
 
 def get_relevant_emoji(summary):
@@ -99,6 +106,7 @@ async def process_daily_summary():
     yesterday_kyiv = now_kyiv - datetime.timedelta(days=1)
     yesterday_date_str = yesterday_kyiv.strftime(DATE_FORMAT)
 
+    logging.info(f"Розпочинаю збір та самаризацію новин за {yesterday_date_str}...")
     print(f"Розпочинаю збір та самаризацію новин за {yesterday_date_str}...")
 
     messages = await get_daily_posts(CHANNEL_ID, yesterday_kyiv)
@@ -121,18 +129,35 @@ async def process_daily_summary():
         summary_text = f"Головні новини за {yesterday_date_str}:\n\n" + "\n\n".join(summary_items)
         try:
             await telegram_client.send_message(CHANNEL_ID, summary_text, link_preview=False)
+            logging.info(f"Самарі за {yesterday_date_str} успішно опубліковано в {CHANNEL_NAME}.")
             print(f"Самарі за {yesterday_date_str} успішно опубліковано в {CHANNEL_NAME}.")
         except Exception as e:
+            logging.error(f"Помилка при публікації самарі: {e}")
             print(f"Помилка при публікації самарі: {e}")
     else:
+        logging.info(f"За {yesterday_date_str} не знайдено текстових дописів для самаризації в {CHANNEL_NAME}.")
         print(f"За {yesterday_date_str} не знайдено текстових дописів для самаризації в {CHANNEL_NAME}.")
+
+def delete_old_logs():
+    """Видаляє логи старші за 7 днів."""
+    now = time.time()
+    cutoff = now - (7 * 24 * 60 * 60)  # 7 днів у секундах
+    log_file = LOG_FILE
+    try:
+        if os.path.exists(log_file):
+            if os.stat(log_file).st_mtime < cutoff:
+                os.remove(log_file)
+                logging.info(f"Видалено старий лог-файл: {log_file}")
+        except Exception as e:
+            logging.error(f"Помилка при видаленні старих логів: {e}")
 
 async def main():
     """Основна функція для запуску бота."""
     await telegram_client.connect()
 
     kyiv_tz = pytz.timezone('Europe/Kiev')
-    schedule.every().day.at("22:45").do(lambda: telegram_client.loop.create_task(process_daily_summary()))
+    schedule.every().day.at(SCHEDULED_TIME).do(lambda: telegram_client.loop.create_task(process_daily_summary()))
+    schedule.every().day.at("03:00").do(delete_old_logs) # Запускати очищення логів о 3 ранку
 
     while True:
         schedule.run_pending()
