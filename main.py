@@ -158,7 +158,8 @@ async def main():
 
     while True:
         now_kyiv = datetime.datetime.now(kyiv_tz).time()
-        scheduled_time_obj = datetime.datetime.strptime(SCHEDULED_TIME, "%H:%M").time()
+        scheduled_hour, scheduled_minute = map(int, SCHEDULED_TIME.split(':'))
+        scheduled_time_obj = datetime.time(scheduled_hour, scheduled_minute)
 
         if now_kyiv.hour == scheduled_time_obj.hour and now_kyiv.minute == scheduled_time_obj.minute and now_kyiv.second < 5: # Запускати на початку хвилини
             await process_daily_summary()
