@@ -59,7 +59,7 @@ async def summarize_text(text):
     """Генерує стислий опис тексту за допомогою OpenAI API."""
     try:
         response = await openai.ChatCompletion.acreate(
-            model="gpt-3.5-turbo",  # Ви можете спробувати інші моделі, наприклад "gpt-4"
+            model="gpt-4",  # Ви можете спробувати інші моделі, наприклад "gpt-4"
             messages=[
                 {"role": "system", "content": "Ти - дружелюбний та інформативний бот, який стисло переказує головні новини."},
                 {"role": "user", "content": f"Стисло перекажи головну думку цього тексту одним-двома реченнями: {text}"},
