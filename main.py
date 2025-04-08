@@ -113,9 +113,6 @@ async def process_daily_summary():
 async def main():
     """Основна функція для запуску бота."""
     await telegram_client.connect()
-    if not await telegram_client.is_user_authorized():
-        await telegram_client.send_code_request(await telegram_client.get_me().phone)
-        await telegram_client.sign_in(input('Введіть код: '))
 
     kyiv_tz = pytz.timezone('Europe/Kiev')
     schedule.every().day.at("09:00").do(lambda: telegram_client.loop.create_task(process_daily_summary()))
