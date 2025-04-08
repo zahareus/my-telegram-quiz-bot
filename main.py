@@ -13,6 +13,7 @@ TELEGRAM_API_ID = int(os.environ.get("TELEGRAM_API_ID"))
 TELEGRAM_API_HASH = os.environ.get("TELEGRAM_API_HASH")
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
+print(f"Значення GEMINI_API_KEY: {GEMINI_API_KEY}")
 CHANNEL_ID = int(os.environ.get("CHANNEL_ID"))  # ID каналу для аналізу
 
 # Назва каналу для відображення (можна отримати динамічно)
