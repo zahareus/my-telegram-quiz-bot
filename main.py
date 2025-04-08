@@ -3,7 +3,7 @@ import datetime
 import pytz
 import time
 from telethon import TelegramClient
-from telethon.tl.functions.users import GetMeRequest  # Правильний імпорт
+from telethon.tl.functions.users import GetMeRequest  # Ось правильний імпорт
 import openai
 from flask import Flask
 from threading import Thread
