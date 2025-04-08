@@ -113,6 +113,11 @@ async def main():
         await telegram_client.connect()
         if await telegram_client.is_connected():
             print("Підключення до Telegram успішне!")
+            try:
+                await telegram_client.send_message(CHANNEL_ID, "Це тестове повідомлення від бота.")
+                print(f"Тестове повідомлення успішно надіслано до каналу {CHANNEL_ID}")
+            except Exception as e:
+                print(f"Помилка при надсиланні тестового повідомлення: {e}")
         else:
             print("Підключення до Telegram не встановлено.")
     except ConnectionError as ce:
