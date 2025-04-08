@@ -112,13 +112,16 @@ async def main():
         print("Спроба підключення до Telegram...")
         await telegram_client.connect()
         print("Підключення до Telegram успішне!")
+    except ConnectionError as ce:
+        print(f"Помилка ConnectionError під час підключення до Telegram: {ce}")
+        return
     except Exception as e:
-        print(f"Помилка під час підключення до Telegram: {e}")
+        print(f"Інша помилка під час підключення до Telegram: {e}")
         return
 
     print("Бот чекає...")
     while True:
-        await asyncio.sleep(60 * 60) # Засипаємо на годину, щоб не перевантажувати логи
+        await asyncio.sleep(60 * 60) # Засипаємо на годину
 
 if __name__ == "__main__":
     import asyncio
