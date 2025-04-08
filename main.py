@@ -3,7 +3,6 @@ import datetime
 import pytz
 import time
 from telethon import TelegramClient
-from telethon.tl.functions import users
 import openai
 from flask import Flask
 from threading import Thread
@@ -114,8 +113,6 @@ async def main():
         await telegram_client.connect()
         if await telegram_client.is_connected():
             print("Підключення до Telegram успішне!")
-            me = await telegram_client(users.GetMeRequest())
-            print(f"Інформація про бота: {me}")
         else:
             print("Підключення до Telegram не встановлено.")
     except ConnectionError as ce:
@@ -125,22 +122,9 @@ async def main():
         print(f"Інша помилка під час підключення до Telegram: {e}")
         return
 
-    kyiv_tz = pytz.timezone('Europe/Kiev')
-
+    print("Бот чекає...")
     while True:
-        now_kyiv = datetime.datetime.now(kyiv_tz).time()
-        scheduled_hour, scheduled_minute = map(int, SCHEDULED_TIME.split(':'))
-        scheduled_time_obj = datetime.time(scheduled_hour, scheduled_minute)
-
-        print(f"Поточний київський час: {now_kyiv.hour}:{now_kyiv.minute}:{now_kyiv.second}")
-        print(f"Запланований час: {scheduled_time_obj.hour}:{scheduled_time_obj.minute}")
-
-        if now_kyiv.hour == scheduled_time_obj.hour and now_kyiv.minute == scheduled_time_obj.minute and now_kyiv.second < 60:
-            print("Час співпав, запускаю process_daily_summary()")
-            await process_daily_summary()
-            await asyncio.sleep(60 * 60 * 24) # Запускати лише раз на день
-
-        await asyncio.sleep(60)
+        await asyncio.sleep(60 * 60)
 
 if __name__ == "__main__":
     import asyncio
