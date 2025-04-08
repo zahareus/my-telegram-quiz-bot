@@ -156,7 +156,8 @@ async def main():
     await telegram_client.connect()
 
     kyiv_tz = pytz.timezone('Europe/Kiev')
-    schedule.every().day.at(SCHEDULED_TIME).do(lambda: telegram_client.loop.create_task(process_daily_summary()))
+    scheduled_time = os.environ.get("SCHEDULED_TIME", "09:00")
+    schedule.every().day.at(scheduled_time).do(lambda: telegram_client.loop.create_task(process_daily_summary()))
     schedule.every().day.at("03:00").do(delete_old_logs) # Run log cleanup at 3 AM
 
     while True:
