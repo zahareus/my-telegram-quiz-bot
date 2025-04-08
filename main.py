@@ -2,7 +2,7 @@ import os
 import datetime
 import pytz
 import time
-from telethon import TelegramClient, functions, types
+from telethon import TelegramClient
 import openai
 from flask import Flask
 from threading import Thread
@@ -113,8 +113,6 @@ async def main():
         await telegram_client.connect()
         if await telegram_client.is_connected():
             print("Підключення до Telegram успішне!")
-            me = await telegram_client(functions.users.GetMeRequest())
-            print(f"Інформація про бота: {me}")
         else:
             print("Підключення до Telegram не встановлено.")
     except ConnectionError as ce:
