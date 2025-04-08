@@ -6,6 +6,8 @@ import time
 from telethon import TelegramClient, events, utils
 from telethon.tl.types import PeerChannel
 import openai
+from flask import Flask
+from threading import Thread
 
 # --- Налаштування ---
 # Замініть на свої значення в змінних середовища на Render.com
@@ -43,6 +45,17 @@ EMOJI_MAP = {
 telegram_client = TelegramClient('samarytanin_bot', TELEGRAM_API_ID, TELEGRAM_API_HASH)
 openai.api_key = OPENAI_API_KEY
 
+# --- Flask для Render.com ---
+app = Flask(__name__)
+
+@app.route('/')
+def hello():
+    return "Бот Самаритянин запущено!"
+
+def run_flask():
+    app.run(host='0.0.0.0', port=10000) # Виберіть будь-який незайнятий порт
+
+# --- Функції бота ---
 async def get_daily_posts(channel_id, target_date):
     """Отримує всі дописи за вказану дату з Telegram-каналу."""
     start_of_day = target_date.replace(hour=0, minute=0, second=0, microsecond=0)
@@ -59,7 +72,7 @@ async def summarize_text(text):
     """Генерує стислий опис тексту за допомогою OpenAI API."""
     try:
         response = await openai.ChatCompletion.acreate(
-            model="gpt-4",  # Ви можете спробувати інші моделі, наприклад "gpt-4"
+            model="gpt-3.5-turbo",  # Ви можете спробувати інші моделі, наприклад "gpt-4"
             messages=[
                 {"role": "system", "content": "Ти - дружелюбний та інформативний бот, який стисло переказує головні новини."},
                 {"role": "user", "content": f"Стисло перекажи головну думку цього тексту одним-двома реченнями: {text}"},
@@ -123,4 +136,6 @@ async def main():
 
 if __name__ == "__main__":
     import asyncio
+    flask_thread = Thread(target=run_flask)
+    flask_thread.start()
     asyncio.run(main())
