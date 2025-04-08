@@ -107,27 +107,24 @@ async def process_daily_summary():
         print(f"За {yesterday_date_str} не знайдено текстових дописів для самаризації в {CHANNEL_NAME}.")
 
 async def main():
-    await telegram_client.connect()
+    print("Функція main запущена!")
+    try:
+        print("Спроба підключення до Telegram...")
+        await telegram_client.connect()
+        print("Підключення до Telegram успішне!")
+    except Exception as e:
+        print(f"Помилка під час підключення до Telegram: {e}")
+        return
 
-    kyiv_tz = pytz.timezone('Europe/Kiev')
-
+    print("Бот чекає...")
     while True:
-        now_kyiv = datetime.datetime.now(kyiv_tz).time()
-        scheduled_hour, scheduled_minute = map(int, SCHEDULED_TIME.split(':'))
-        scheduled_time_obj = datetime.time(scheduled_hour, scheduled_minute)
-
-        print(f"Поточний київський час: {now_kyiv.hour}:{now_kyiv.minute}:{now_kyiv.second}")
-        print(f"Запланований час: {scheduled_time_obj.hour}:{scheduled_time_obj.minute}")
-
-        if now_kyiv.hour == scheduled_time_obj.hour and now_kyiv.minute == scheduled_time_obj.minute and now_kyiv.second < 60:
-            print("Час співпав, запускаю process_daily_summary()")
-            await process_daily_summary()
-            await asyncio.sleep(60 * 60 * 24) # Запускати лише раз на день
-
-        await asyncio.sleep(60)
+        await asyncio.sleep(60 * 60) # Засипаємо на годину, щоб не перевантажувати логи
 
 if __name__ == "__main__":
     import asyncio
     flask_thread = Thread(target=run_flask)
     flask_thread.start()
-    asyncio.run(main())
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        pass
