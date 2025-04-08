@@ -119,9 +119,10 @@ async def main():
         print(f"Поточний київський час: {now_kyiv.hour}:{now_kyiv.minute}:{now_kyiv.second}")
         print(f"Запланований час: {scheduled_time_obj.hour}:{scheduled_time_obj.minute}")
 
-        if now_kyiv.hour == scheduled_time_obj.hour and now_kyiv.minute == scheduled_time_obj.minute and now_kyiv.second < 10:
+        if now_kyiv.hour == scheduled_time_obj.hour and now_kyiv.minute == scheduled_time_obj.minute and now_kyiv.second < 60:
             print("Час співпав, запускаю process_daily_summary()")
             await process_daily_summary()
+            await asyncio.sleep(60 * 60 * 24) # Запускати лише раз на день
 
         await asyncio.sleep(60)
 
