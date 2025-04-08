@@ -132,7 +132,7 @@ async def main():
     await telegram_client.connect()
 
     kyiv_tz = pytz.timezone('Europe/Kiev')
-    schedule.every().day.at("22:40").do(lambda: telegram_client.loop.create_task(process_daily_summary()))
+    schedule.every().day.at("22:45").do(lambda: telegram_client.loop.create_task(process_daily_summary()))
 
     while True:
         schedule.run_pending()
