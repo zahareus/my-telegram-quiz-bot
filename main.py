@@ -5,15 +5,14 @@ import schedule
 import time
 from telethon import TelegramClient, events, utils
 from telethon.tl.types import PeerChannel
-import google.generativeai as genai
+import openai
 
 # --- Налаштування ---
-# Замініть на свої значення
+# Замініть на свої значення в змінних середовища на Render.com
 TELEGRAM_API_ID = int(os.environ.get("TELEGRAM_API_ID"))
 TELEGRAM_API_HASH = os.environ.get("TELEGRAM_API_HASH")
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
-GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
-print(f"Значення GEMINI_API_KEY: {GEMINI_API_KEY}")
+OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 CHANNEL_ID = int(os.environ.get("CHANNEL_ID"))  # ID каналу для аналізу
 
 # Назва каналу для відображення (можна отримати динамічно)
@@ -42,8 +41,7 @@ EMOJI_MAP = {
 
 # --- Ініціалізація клієнтів ---
 telegram_client = TelegramClient('samarytanin_bot', TELEGRAM_API_ID, TELEGRAM_API_HASH)
-gemini_client = genai.configure(api_key=GEMINI_API_KEY)
-model = gemini_client.generative_model(model_name="gemini-pro")
+openai.api_key = OPENAI_API_KEY
 
 async def get_daily_posts(channel_id, target_date):
     """Отримує всі дописи за вказану дату з Telegram-каналу."""
@@ -58,14 +56,18 @@ async def get_daily_posts(channel_id, target_date):
     return all_messages
 
 async def summarize_text(text):
-    """Генерує стислий опис тексту за допомогою Gemini API."""
+    """Генерує стислий опис тексту за допомогою OpenAI API."""
     try:
-        response = await model.generate_content_async(f"Стисло перекажи головну думку цього тексту одним-двома реченнями, зберігаючи інформативний та дружелюбний стиль: {text}")
-        if response.parts:
-            return response.parts[0].text.strip()
-        return None
+        response = await openai.ChatCompletion.acreate(
+            model="gpt-3.5-turbo",  # Ви можете спробувати інші моделі, наприклад "gpt-4"
+            messages=[
+                {"role": "system", "content": "Ти - дружелюбний та інформативний бот, який стисло переказує головні новини."},
+                {"role": "user", "content": f"Стисло перекажи головну думку цього тексту одним-двома реченнями: {text}"},
+            ]
+        )
+        return response['choices'][0]['message']['content'].strip()
     except Exception as e:
-        print(f"Помилка при самаризації: {e}")
+        print(f"Помилка при самаризації OpenAI: {e}")
         return None
 
 def get_relevant_emoji(summary):
