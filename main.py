@@ -43,7 +43,7 @@ async def get_daily_posts(channel_id, target_date):
     start_of_day = target_date.replace(hour=0, minute=0, second=0, microsecond=0)
     end_of_day = target_date.replace(hour=23, minute=59, second=59, microsecond=999999)
     all_messages = []
-    async for message in telegram_client.get_messages(channel_id, limit=None, reverse=True):
+    for message in await telegram_client.get_messages(channel_id, limit=None, reverse=True):
         if message.date >= start_of_day and message.date <= end_of_day:
             all_messages.append(message)
         elif message.date < start_of_day:
@@ -114,7 +114,7 @@ async def main():
         if telegram_client.is_connected():
             print("Підключення до Telegram успішне!")
             try:
-                await telegram_client.send_message(CHANNEL_ID, "Це тестове повідомлення від бота.")
+                # await telegram_client.send_message(CHANNEL_ID, "Це тестове повідомлення від бота.")
                 print(f"Тестове повідомлення успішно надіслано до каналу {CHANNEL_ID}")
             except Exception as e:
                 print(f"Помилка при надсиланні тестового повідомлення: {e}")
