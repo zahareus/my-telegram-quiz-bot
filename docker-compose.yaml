@@ -1,0 +1,33 @@
+services:
+  summarize_bot:
+    build:
+        context: .
+        dockerfile: Dockerfile_main
+    restart: always
+    volumes:
+      - ./.local:/usr/src/summarize_bot/.local
+    env_file:
+      - ./.env
+
+#  summarize_bot_scrap:
+#    build:
+#      context: .
+#      dockerfile: Dockerfile_scrap
+#    restart: always
+#    volumes:
+#      - ./.local:/usr/src/summarize_bot/.local
+#    env_file:
+#      - ./.env
+
+  postgres:
+    image: postgres:latest
+    restart: always
+    shm_size: 128mb
+    volumes:
+      - ./database:/var/lib/postgresql/data
+    env_file:
+      - ./.env
+    environment:
+      POSTGRES_DB: "summarize_dev"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: ${DB_PASSWORD}

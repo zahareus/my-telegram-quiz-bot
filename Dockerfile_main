@@ -1,0 +1,16 @@
+FROM ubuntu:latest
+RUN apt-get update
+RUN apt-get install -y python3.12 python3.12-dev python3-pip python3-venv
+
+WORKDIR /usr/src/summarize_bot
+ENV PYTHONPATH="/usr/src/summarize_bot"
+COPY requirements.txt .
+
+RUN python3 -m venv .venv
+RUN .venv/bin/python3 -m pip install -r requirements.txt
+COPY . .
+
+CMD [".venv/bin/python3", "./main.py"]
+
+
+

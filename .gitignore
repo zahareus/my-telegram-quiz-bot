@@ -1,0 +1,9 @@
+.idea
+.venv
+__pycache__
+*.pyc
+.env
+/logger.log
+/alembic/versions/
+/database/
+/.local/

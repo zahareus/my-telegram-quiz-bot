@@ -1,0 +1,9 @@
+.idea
+.venv
+__pycache__
+*.pyc
+cert.pem
+key.pem
+.env
+/logger.log
+/alembic/versions/
