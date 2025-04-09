@@ -111,7 +111,7 @@ async def main():
     try:
         print("Спроба підключення до Telegram...")
         await telegram_client.start(bot_token=BOT_TOKEN)
-        if await telegram_client.is_connected():
+        if telegram_client.is_connected():
             print("Підключення до Telegram успішне!")
             try:
                 await telegram_client.send_message(CHANNEL_ID, "Це тестове повідомлення від бота.")
