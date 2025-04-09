@@ -32,10 +32,10 @@ services:
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     networks:
-      pgadmin_net:
+      compose_pgadmin_net:
         aliases:
           - summarize_db
 
 networks:
-  pgadmin_net:
+  compose_pgadmin_net:
     external: True
