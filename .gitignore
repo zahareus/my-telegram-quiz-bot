@@ -6,4 +6,4 @@ __pycache__
 /logger.log
 /alembic/versions/
 /database/
-/.local/
+#/.local/
