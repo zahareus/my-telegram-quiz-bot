@@ -110,7 +110,7 @@ async def main():
     print("Функція main запущена!")
     try:
         print("Спроба підключення до Telegram...")
-        await telegram_client.connect()
+        await telegram_client.start(bot_token=BOT_TOKEN)
         if await telegram_client.is_connected():
             print("Підключення до Telegram успішне!")
             try:
@@ -144,6 +144,7 @@ async def main():
 
         await asyncio.sleep(60)
 
+
 if __name__ == "__main__":
     import asyncio
     flask_thread = Thread(target=run_flask)
@@ -151,4 +152,5 @@ if __name__ == "__main__":
     try:
         asyncio.run(main())
     except KeyboardInterrupt:
+        asyncio.run(telegram_client.disconnect())
         pass
