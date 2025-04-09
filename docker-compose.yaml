@@ -8,6 +8,10 @@ services:
       - ./.local:/usr/src/summarize_bot/.local
     env_file:
       - ./.env
+    networks:
+      default:
+        aliases:
+          - summarize_bot
 
 #  summarize_bot_scrap:
 #    build:
@@ -35,7 +39,12 @@ services:
       compose_pgadmin_net:
         aliases:
           - summarize_db
+      default:
+        aliases:
+          - summarize_db
 
 networks:
   compose_pgadmin_net:
     external: True
+  default:
+    driver: bridge
