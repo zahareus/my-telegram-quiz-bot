@@ -24,8 +24,12 @@ EMOJI_MAP = {
     "спорт": "⚽", "культура": "🎭", "технології": "💻", "погода": "☀️",
 }
 
+TG_PHONE = os.environ.get("TG_PHONE")
+TG_PASSWORD = os.environ.get("TG_PASSWORD", None)
+
 # --- Ініціалізація клієнтів ---
 telegram_client = TelegramClient('samarytanin_bot', TELEGRAM_API_ID, TELEGRAM_API_HASH)
+telegram_user = TelegramClient('user_session', TELEGRAM_API_ID, TELEGRAM_API_HASH)
 openai.api_key = OPENAI_API_KEY
 
 # --- Flask для Render.com ---
@@ -43,11 +47,13 @@ async def get_daily_posts(channel_id, target_date):
     start_of_day = target_date.replace(hour=0, minute=0, second=0, microsecond=0)
     end_of_day = target_date.replace(hour=23, minute=59, second=59, microsecond=999999)
     all_messages = []
-    for message in await telegram_client.get_messages(channel_id, limit=None, reverse=True):
+    await telegram_user.start(phone=TG_PHONE, password=TG_PASSWORD)
+    for message in await telegram_user.get_messages(channel_id, limit=None, reverse=True):
         if message.date >= start_of_day and message.date <= end_of_day:
             all_messages.append(message)
         elif message.date < start_of_day:
             break
+    await telegram_user.disconnect()
     return all_messages
 
 async def summarize_text(text):
