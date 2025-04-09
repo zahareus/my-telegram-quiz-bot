@@ -26,6 +26,7 @@ EMOJI_MAP = {
 
 TG_PHONE = os.environ.get("TG_PHONE")
 TG_PASSWORD = os.environ.get("TG_PASSWORD", None)
+TG_LOGIN_CODE = os.environ.get("TG_LOGIN_CODE", None)
 
 # --- Ініціалізація клієнтів ---
 telegram_client = TelegramClient('samarytanin_bot', TELEGRAM_API_ID, TELEGRAM_API_HASH)
@@ -46,8 +47,18 @@ def run_flask():
 async def get_daily_posts(channel_id, target_date):
     start_of_day = target_date.replace(hour=0, minute=0, second=0, microsecond=0)
     end_of_day = target_date.replace(hour=23, minute=59, second=59, microsecond=999999)
+
+    async def code_callback():
+        print("Waiting for the code TG_LOGIN_CODE...")
+        while True:
+            code = os.environ.get("TG_LOGIN_CODE", None)
+            if code:
+                print(f"Recieved code: {code}")
+                return code
+            await asyncio.sleep(1)
+
     all_messages = []
-    await telegram_user.start(phone=TG_PHONE, password=TG_PASSWORD)
+    await telegram_user.start(phone=TG_PHONE, password=TG_PASSWORD, code_callback=code_callback)
     for message in await telegram_user.get_messages(channel_id, limit=None, reverse=True):
         if message.date >= start_of_day and message.date <= end_of_day:
             all_messages.append(message)
