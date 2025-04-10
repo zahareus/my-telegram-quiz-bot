@@ -21,7 +21,6 @@ async def save_message(message: Message):
     if message_text is None:
         message_text = message.caption
 
-
     async with sessionmanager.session() as session:
         text_repo = MessageRepository(session)
 

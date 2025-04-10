@@ -10,6 +10,7 @@ class Chat(Base):
 
     id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4)
     chat_id: Mapped[str] = mapped_column(unique=True)
+    chat_title: Mapped[str] = mapped_column(nullable=True)
     is_daily: Mapped[bool] = mapped_column(default=False)
     is_weekly: Mapped[bool] = mapped_column(default=False)
 
@@ -22,6 +23,7 @@ class User(Base):
 
     id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4)
     user_id: Mapped[str] = mapped_column(unique=True)
+    username: Mapped[str] = mapped_column(nullable=True)
     is_admin: Mapped[bool] = mapped_column(default=False)
 
     def __repr__(self) -> str:

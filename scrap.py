@@ -1,5 +1,5 @@
 from src.database import sessionmanager
-from src.telegram.services import MessageService
+from src.domain.service import MessageService
 import logging
 from src.telegram import bot
 import asyncio

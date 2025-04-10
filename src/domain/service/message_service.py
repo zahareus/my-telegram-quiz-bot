@@ -3,9 +3,11 @@ import time
 
 from typing import List
 from src.database import MessageRepository
+from src.domain import ChatService
+from src.database import Message, Chat
 from config import configuration, environments
 import datetime
-
+from aiogram.types import Message as tgMessage
 from sqlalchemy.ext.asyncio import AsyncSession
 
 import requests
@@ -16,12 +18,31 @@ class MessageService:
     def __init__(self, session: AsyncSession):
         self.session = session
         self.message_repository = MessageRepository(session)
+        self.chat_service = ChatService(session)
         self.logger = logging.getLogger(__name__)
 
+    async def create(self, message: tgMessage) -> None:
+        if message.text is None and message.caption is None:
+            return None
+        message_text = message.text
+        if message_text is None:
+            message_text = message.caption
+
+        chat_field = await self.chat_service.get_chat(message)
+        if chat_field is None:
+            return
+        await self.message_repository.create(
+            message_id=str(message.message_id),
+            message_text=message_text,
+            chat_uuid=chat_field.id,
+            timestamp=message.date
+        )
+
     async def get_past_day_messages(self, channel_id: str) -> List[List[str]]:
+        chat_field = await self.chat_service.get_by_chat_id(channel_id)
         yesterday_time = datetime.datetime.now(tz=None) - datetime.timedelta(days=1)
-        messages_list = await self.message_repository.get_by_chat_id(
-            chat_id=channel_id,
+        messages_list = await self.message_repository.get_by_chat_uuid(
+            chat_uuid=chat_field.id,
             all_after=yesterday_time
         )
         messages_text = []
@@ -39,15 +60,6 @@ class MessageService:
             message_link = f"https://t.me/c/{str(channel_id)[4:]}/{message.message_id}"
             messages_text.append([str(message.message_text), message_link])
         return messages_text
-
-    # @staticmethod
-    # async def get_relevant_emoji(text: str) -> str:
-    #     if text is not None:
-    #         text = text.lower()
-    #         for keyword, emoji in configuration.emoji_map.map.items():
-    #             if keyword in text:
-    #                 return emoji
-    #     return "📰"
 
     def summarize_text(self, text: str) -> str | None:
         # time.sleep(5)
