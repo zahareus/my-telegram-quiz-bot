@@ -54,7 +54,7 @@ class MessageService:
         response = requests.post(
             url="https://openrouter.ai/api/v1/chat/completions",
             headers={
-                "Authorization": f"Bearer {environments.openrouter.token}",
+                "Authorization": f"Bearer {environments.model.token}",
             },
             data=json.dumps({
                 "model": "google/gemini-2.0-flash-exp:free",

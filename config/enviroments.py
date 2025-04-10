@@ -26,8 +26,9 @@ class Database:
     def process_url(self):
         self.url = f"{self.type}+asyncpg://{self.user}:{self.password}@{self.host}:{self.port}/{self.name}"
 
+
 @dataclass
-class OpenRouter:
+class AiModel:
     token: str
 
 
@@ -35,7 +36,8 @@ class OpenRouter:
 class Environ:
     telegram: Telegram
     database: Database
-    openrouter: OpenRouter
+    model: AiModel
+    dev_mode: bool
 
 
 def set_logging_config():
@@ -77,9 +79,10 @@ def load_environ() -> Environ:
             user=get_environ('DB_USER', default='postgres'),
             password=get_environ('DB_PASSWORD', default='pgAdminPassword')
         ),
-        openrouter=OpenRouter(
+        model=AiModel(
             token=get_environ('GEMINI_TOKEN')
-        )
+        ),
+        dev_mode=bool(int(get_environ('DEV_MODE', default=1)))
     )
     local_config.database.process_url()
     return local_config

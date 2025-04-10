@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from .base import get_config, get_section
 import configparser
 from typing import List, Dict
+from . import environments
 
 
 @dataclass
@@ -13,9 +14,9 @@ class Prompt:
     # def __post_init__(self):
     #     self.bots_addition = int(self.bots_addition)
 
+
 @dataclass
 class Settings:
-    channel_name: str
     date_format: str
     channel_id: int
     default_tz: str
@@ -43,9 +44,25 @@ class Config:
     skip: SkipParts
 
 
+def merge_ini_files(file1_path: str, file2_path: str) -> configparser.ConfigParser:
+    merged_config = configparser.ConfigParser()
+    merged_config.read(file1_path, encoding="utf-8")
+
+    temp_config = configparser.ConfigParser()
+    temp_config.read(file2_path, encoding="utf-8")
+
+    for section in temp_config.sections():
+        if not merged_config.has_section(section):
+            merged_config.add_section(section)
+        for key, value in temp_config.items(section):
+            merged_config.set(section, key, value)
+    return merged_config
+
+
 def load_config():
-    configuration_file = configparser.ConfigParser()
-    configuration_file.read("config.ini", encoding="utf-8")
+    dev_mode = environments.dev_mode
+    additional_config = "develop.ini" if dev_mode else "production.ini"
+    configuration_file = merge_ini_files("global.ini", additional_config)
 
     local_config = Config(
         prompt=Prompt(
@@ -56,7 +73,6 @@ def load_config():
             map=get_section(configuration_file, "EMOJI_MAP")
         ),
         settings=Settings(
-            channel_name=get_config(configuration_file, "channel_name", "SETTINGS", default=""),
             date_format=get_config(configuration_file, "date_format", "SETTINGS", default="%Y-%m-%d"),
             channel_id=int(get_config(configuration_file, "channel_id", "SETTINGS")),
             default_tz=get_config(configuration_file, "default_tz", "SETTINGS"),

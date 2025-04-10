@@ -27,6 +27,7 @@ def get_config(config: configparser.ConfigParser, variable_name: str, section: s
             return default
         raise ImproperlyConfigured(variable_name)
 
+
 def get_section(config: configparser.ConfigParser, section: str) -> Dict[str, str]:
     """Get the configuration section or raise an error."""
     try:
