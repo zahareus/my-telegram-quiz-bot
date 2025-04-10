@@ -1,23 +1,8 @@
 from uuid import uuid4, UUID
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy import ForeignKey
 from . import Base
 import datetime
-
-
-class Message(Base):
-    __tablename__ = "message_table"
-
-    id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4)
-
-    message_id: Mapped[str] = mapped_column()
-    message_text: Mapped[str] = mapped_column(nullable=True)
-    timestamp: Mapped[datetime.datetime] = mapped_column()
-
-    chat: Mapped["Chat"] = mapped_column("Chat", back_populates="messages")
-    chat_id: Mapped[str] = mapped_column()
-
-    def __repr__(self) -> str:
-        return f"Message(id={self.id}, chat_id={self.chat_id} message_id={self.message_id} timestamp={self.timestamp})"
 
 
 class Chat(Base):
@@ -41,3 +26,20 @@ class User(Base):
 
     def __repr__(self) -> str:
         return f"User(id={self.id}, user_id={self.user_id})"
+
+
+class Message(Base):
+    __tablename__ = "message_table"
+
+    id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4)
+
+    message_id: Mapped[str] = mapped_column()
+    message_text: Mapped[str] = mapped_column(nullable=True)
+    timestamp: Mapped[datetime.datetime] = mapped_column()
+
+    chat_id: Mapped[UUID] = mapped_column(ForeignKey("chat_table.id"))
+    chat: Mapped[Chat] = relationship(lazy="selectin")
+
+    def __repr__(self) -> str:
+        return f"Message(id={self.id}, chat_id={self.chat_id} message_id={self.message_id} timestamp={self.timestamp})"
+
