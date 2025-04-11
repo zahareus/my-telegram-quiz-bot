@@ -1,1 +1,1 @@
-35 1 * * * cd /usr/src/summarize_bot && /usr/src/summarize_bot/.venv/bin/python3 /usr/src/summarize_bot/scrap.py >> /var/log/cron.log 2>&1
+47 1 * * * cd /usr/src/summarize_bot && /usr/src/summarize_bot/.venv/bin/python3 /usr/src/summarize_bot/scrap.py >> /var/log/cron.log 2>&1
