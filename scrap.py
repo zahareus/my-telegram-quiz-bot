@@ -18,7 +18,7 @@ async def get_info():
         # summary_texts: List[str] = [f'{text} (<a href = "{link}">посилання</a>)' for text, link in summary_list]
         yesterday_data = (datetime.datetime.now(tz=None) - datetime.timedelta(days=1)).date()
         summary_result = configuration.settings.update_text.format(yesterday_date=yesterday_data) + "\n\n" + summary_text
-        await bot.send_message(channel_id, summary_result)
+        await bot.send_message(-1002317235802, summary_result)
 
 if __name__ == "__main__":
     logging.info("Scrap update")

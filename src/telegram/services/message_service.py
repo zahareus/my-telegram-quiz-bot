@@ -57,7 +57,7 @@ class MessageService:
                 "Authorization": f"Bearer {environments.openrouter.token}",
             },
             data=json.dumps({
-                "model": "google/gemini-2.0-flash-exp:free",
+                "model": "google/gemini-2.5-pro-exp-03-25:free",
                 "messages": [
                     {
                         "role": "system",
