@@ -1,20 +1,28 @@
-FROM ubuntu:latest
-RUN apt-get update
-RUN apt-get install -y python3.12 python3.12-dev python3-pip python3-venv
+FROM python:3.12-slim
 
+# Set working directory
 WORKDIR /usr/src/summarize_bot
 ENV PYTHONPATH="/usr/src/summarize_bot"
-COPY requirements.txt .
 
-RUN python3 -m venv .venv
-RUN .venv/bin/python3 -m pip install -r requirements.txt
+# Install required system packages
+RUN apt-get update && \
+    apt-get install -y cron && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Copy and install Python dependencies
+COPY requirements.txt .
+RUN python3 -m venv .venv && \
+    .venv/bin/pip install --upgrade pip && \
+    .venv/bin/pip install -r requirements.txt
+
+# Copy the rest of the project
 COPY . .
 
-RUN apt-get -y install cron
-
+# Set up cron
 COPY cronfile /etc/cron.d/cronfile
-RUN chmod 0644 /etc/cron.d/cronfile
-RUN crontab /etc/cron.d/cronfile
-RUN touch /var/log/cron.log
+RUN chmod 0644 /etc/cron.d/cronfile && \
+    crontab /etc/cron.d/cronfile && \
+    touch /var/log/cron.log
 
+# Start cron and tail the log
 CMD printenv > /etc/environment && cron && tail -f /var/log/cron.log
