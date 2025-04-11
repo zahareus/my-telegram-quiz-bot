@@ -13,19 +13,19 @@ services:
         aliases:
           - summarize_bot
 
-  summarize_bot_scrap:
-    build:
-      context: .
-      dockerfile: Dockerfile_scrap
-    restart: always
-    volumes:
-      - ./.local:/usr/src/summarize_bot/.local
-    env_file:
-      - ./.env
-    networks:
-      default:
-        aliases:
-          - summarize_bot_scrap
+#  summarize_bot_scrap:
+#    build:
+#      context: .
+#      dockerfile: Dockerfile_scrap
+#    restart: always
+#    volumes:
+#      - ./.local:/usr/src/summarize_bot/.local
+#    env_file:
+#      - ./.env
+#    networks:
+#      default:
+#        aliases:
+#          - summarize_bot_scrap
 
   summarize_db:
     image: postgres:latest
