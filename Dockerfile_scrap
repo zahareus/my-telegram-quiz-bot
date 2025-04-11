@@ -10,7 +10,7 @@ RUN python3 -m venv .venv
 RUN .venv/bin/python3 -m pip install -r requirements.txt
 COPY . .
 
-RUN apt-get update && apt-get -y install cron
+RUN apt-get update && sudo apt-get upgrade && apt-get -y install cron
 
 COPY cronfile /etc/cron.d/cronfile
 RUN chmod 0644 /etc/cron.d/cronfile
