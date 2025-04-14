@@ -10,7 +10,13 @@ class UserService:
         self.user_repository = UserRepository(session)
         self.logger = logging.getLogger(__name__)
 
-    async def get_user(self, message: Message) -> User:
+    @staticmethod
+    async def check_chat(message: Message) -> bool:
+        return message.chat.type == 'private'
+
+    async def get_user(self, message: Message) -> User | None:
+        if not await self.check_chat(message):
+            return None
         user_field = await self.user_repository.get_by_user_id(str(message.chat.id))
         if user_field is None:
             username = None
@@ -23,3 +29,6 @@ class UserService:
                 username=username
             )
         return user_field
+
+    async def get_admins_ids(self):
+        return [user_field.user_id for user_field in await self.user_repository.get_admins()]

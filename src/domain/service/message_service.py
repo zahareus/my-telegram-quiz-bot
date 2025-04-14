@@ -1,10 +1,8 @@
 import logging
-import time
 
 from typing import List
 from src.database import MessageRepository
-from src.domain import ChatService
-from src.database import Message, Chat
+from src.domain.service.chat_service import ChatService
 from config import configuration, environments
 import datetime
 from aiogram.types import Message as tgMessage
@@ -69,7 +67,7 @@ class MessageService:
                 "Authorization": f"Bearer {environments.model.token}",
             },
             data=json.dumps({
-                "model": "google/gemini-2.0-flash-exp:free",
+                "model": "google/gemini-2.5-pro-exp-03-25:free",
                 "messages": [
                     {
                         "role": "system",

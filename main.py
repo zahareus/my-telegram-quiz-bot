@@ -25,9 +25,8 @@ async def main():
     #     await session.commit()
     #     print(await team_repo.get_pick(team, 3))
 
-
-    # await bot.delete_webhook(drop_pending_updates=True)
-    # await dp.start_polling(bot)
+    await bot.delete_webhook(drop_pending_updates=False)
+    await dp.start_polling(bot)
 
 
 if __name__ == "__main__":

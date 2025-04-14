@@ -1,31 +1,19 @@
 from aiogram import Router
 from aiogram.types import Message
 
-from src.database import sessionmanager
-from src.database import MessageRepository
+from src.domain import MessageService
 from config import configuration
+from src.domain import session_wrap
+from sqlalchemy.ext.asyncio import AsyncSession
 
 default_router = Router()
 
 
 @default_router.message()
 @default_router.channel_post()
-async def save_message(message: Message):
+@session_wrap
+async def save_message(message: Message, session: AsyncSession):
     if message.chat.id != configuration.settings.channel_id:
         return
-
-    if message.text is None and message.caption is None:
-        return
-
-    message_text = message.text
-    if message_text is None:
-        message_text = message.caption
-
-    async with sessionmanager.session() as session:
-        text_repo = MessageRepository(session)
-
-        await text_repo.create(chat_id=str(message.chat.id),
-                               message_id=str(message.message_id),
-                               message_text=message_text,
-                               timestamp=message.date)
-        await session.commit()
+    message_service = MessageService(session)
+    await message_service.create(message=message)

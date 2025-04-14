@@ -23,7 +23,7 @@ class ChatService:
         return chat_field
 
     async def get_chat(self, message: Message) -> Chat | None:
-        if not self.check_chat(message):
+        if not await self.check_chat(message):
             return None
         chat_field = await self.chat_repository.get_by_chat_id(str(message.chat.id))
         if chat_field is None:
