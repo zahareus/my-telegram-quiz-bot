@@ -1,3 +1,4 @@
 from .message_repository import MessageRepository
-from .chat_repository import ChatRepository
+from .channel_repository import ChannelRepository
 from .user_repository import UserRepository
+from .channel_editor_repository import ChannelEditorRepository

@@ -21,8 +21,8 @@ class MessageRepository:
         stmt = select(Message).where(Message.message_id == message_id).limit(1)
         return await self.session.scalar(stmt)
 
-    async def create(self, chat_uuid: UUID, message_id: str, message_text: str, timestamp: datetime.datetime) -> Message:
-        message = Message(chat_id=chat_uuid,
+    async def create(self, channel_uuid: UUID, message_id: str, message_text: str, timestamp: datetime.datetime) -> Message:
+        message = Message(channel_id=channel_uuid,
                           message_id=message_id,
                           message_text=message_text,
                           timestamp=timestamp.replace(tzinfo=None))
@@ -30,14 +30,14 @@ class MessageRepository:
         self.session.add(message)
         await self.session.flush()
         self.logger.info(
-            f"Message {message.id} created (chat_id: {message.chat_id}, message_id: {message.message_id}), id: {message.id}")
+            f"Message {message.id} created (chat_id: {message.channel_id}, message_id: {message.message_id}), id: {message.id}")
         return await self.get_by_id(message.id)
 
-    async def get_by_chat_uuid(self, chat_uuid: UUID, all_after: datetime.datetime = None) -> List[Message] | None:
+    async def get_by_chat_uuid(self, channel_uuid: UUID, all_after: datetime.datetime = None) -> List[Message] | None:
         if all_after is not None:
-            stmt = select(Message).where(Message.chat_id == chat_uuid, Message.timestamp > all_after)
+            stmt = select(Message).where(Message.channel_id == channel_uuid, Message.timestamp > all_after)
         else:
-            stmt = select(Message).where(Message.chat_id == chat_uuid)
+            stmt = select(Message).where(Message.channel_id == channel_uuid)
         result = await self.session.scalars(stmt)
         messages = list(result.all())
         return messages if messages else None

@@ -32,3 +32,13 @@ class UserService:
 
     async def get_admins_ids(self):
         return [user_field.user_id for user_field in await self.user_repository.get_admins()]
+
+    async def is_admin(self, message: Message) -> bool:
+        user_field = await self.get_user(message)
+        if user_field is None:
+            return False
+        return user_field.is_admin
+
+    async def get_by_user_id(self, user_id: str) -> User | None:
+        user_field = await self.user_repository.get_by_user_id(user_id)
+        return user_field

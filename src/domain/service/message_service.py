@@ -2,7 +2,7 @@ import logging
 
 from typing import List
 from src.database import MessageRepository
-from src.domain.service.chat_service import ChatService
+from .channel_service import ChannelService
 from config import configuration, environments
 import datetime
 from aiogram.types import Message as tgMessage
@@ -16,7 +16,7 @@ class MessageService:
     def __init__(self, session: AsyncSession):
         self.session = session
         self.message_repository = MessageRepository(session)
-        self.chat_service = ChatService(session)
+        self.channel_service = ChannelService(session)
         self.logger = logging.getLogger(__name__)
 
     async def create(self, message: tgMessage) -> None:
@@ -26,21 +26,21 @@ class MessageService:
         if message_text is None:
             message_text = message.caption
 
-        chat_field = await self.chat_service.get_chat(message)
-        if chat_field is None:
+        channel_field = await self.channel_service.get_or_create_message(message)
+        if channel_field is None:
             return
         await self.message_repository.create(
             message_id=str(message.message_id),
             message_text=message_text,
-            chat_uuid=chat_field.id,
+            channel_uuid=channel_field.id,
             timestamp=message.date
         )
 
     async def get_past_day_messages(self, channel_id: str) -> List[List[str]]:
-        chat_field = await self.chat_service.get_by_chat_id(channel_id)
+        channel_field = await self.channel_service.get_by_channel_id(channel_id)
         yesterday_time = datetime.datetime.now(tz=None) - datetime.timedelta(days=1)
         messages_list = await self.message_repository.get_by_chat_uuid(
-            chat_uuid=chat_field.id,
+            channel_uuid=channel_field.id,
             all_after=yesterday_time
         )
         messages_text = []

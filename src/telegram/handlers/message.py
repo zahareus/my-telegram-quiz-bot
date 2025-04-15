@@ -9,7 +9,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 default_router = Router()
 
 
-@default_router.message()
 @default_router.channel_post()
 @session_wrap
 async def save_message(message: Message, session: AsyncSession):

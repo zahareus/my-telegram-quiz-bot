@@ -8,4 +8,8 @@ bot: Bot = Bot(token=environments.telegram.bot_token, default=DefaultBotProperti
 dp: Dispatcher = Dispatcher()
 
 dp.include_router(start_router)
+dp.include_router(channel_router)
+dp.include_router(share_router)
+dp.include_router(editor_router)
 dp.include_router(default_router)
+dp.include_router(cancel_router)
