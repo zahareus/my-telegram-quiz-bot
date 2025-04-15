@@ -205,5 +205,8 @@ async def remove_editor_callback(call: CallbackQuery, callback_data: RemoveEdito
 
     await call.answer()
 
-    await channel_editor_service.remove_editor(channel_field.id, editor_field.id)
+    status = await channel_editor_service.remove_editor(channel_field.id, editor_field.id)
+    if not status:
+        await call.message.answer(f"❌ Editor @{editor_field.username or editor_field.user_id} not found in {channel_field.channel_title or 'Untitled'} chat.")
+        return
     await call.message.answer(f"✅ Editor @{editor_field.username or editor_field.user_id} removed from {channel_field.channel_title or 'Untitled'} chat.")
