@@ -1,10 +1,7 @@
 from aiogram import Router
 from aiogram.types import Message
 
-from domain import ChannelService
-from src.domain import MessageService
-from config import configuration
-from src.domain import session_wrap
+from src.domain import MessageService, ChannelService, session_wrap
 from sqlalchemy.ext.asyncio import AsyncSession
 
 default_router = Router()
