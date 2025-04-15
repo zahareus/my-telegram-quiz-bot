@@ -6,6 +6,7 @@ services:
     restart: always
     volumes:
       - ./.local:/usr/src/summarize_bot/.local
+      - ./alembic/versions:/usr/src/summarize_bot/alembic/versions
     env_file:
       - ./.env
     networks:
@@ -20,6 +21,7 @@ services:
 #    restart: always
 #    volumes:
 #      - ./.local:/usr/src/summarize_bot/.local
+#      - ./alembic/versions:/usr/src/summarize_bot/alembic/versions
 #    env_file:
 #      - ./.env
 
