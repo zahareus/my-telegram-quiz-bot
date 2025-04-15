@@ -32,9 +32,7 @@ services:
       default:
         aliases:
           - summarize_bot
-    depends_on:
-      summarize_db:
-        condition: service_healthy
+
 #  summarize_bot_scrap:
 #    build:
 #      context: .
