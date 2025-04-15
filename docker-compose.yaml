@@ -18,6 +18,7 @@ services:
       default:
         aliases:
           - summarize_db
+
   summarize_bot:
     build:
         context: .
@@ -33,16 +34,20 @@ services:
         aliases:
           - summarize_bot
 
-#  summarize_bot_scrap:
-#    build:
-#      context: .
-#      dockerfile: Dockerfile_scrap
-#    restart: always
-#    volumes:
-#      - ./.local:/usr/src/summarize_bot/.local
-#      - ./alembic/versions:/usr/src/summarize_bot/alembic/versions
-#    env_file:
-#      - ./.env
+  summarize_bot_scrap:
+    build:
+      context: .
+      dockerfile: Dockerfile_scrap
+    restart: always
+    volumes:
+      - ./.local:/usr/src/summarize_bot/.local
+      - ./alembic/versions:/usr/src/summarize_bot/alembic/versions
+    env_file:
+      - ./.env
+    networks:
+      default:
+        aliases:
+          - summarize_scrap
 
 networks:
   compose_pgadmin_net:
