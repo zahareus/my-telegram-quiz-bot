@@ -41,7 +41,7 @@ async def select_channel(message: Message, session: AsyncSession):
     if len(active_channels) == 0:
         await message.answer("❌ No active channels found.\nPress /share to add a channel.")
         return
-    await message.answer("Click the button to add channel", reply_markup=reply_markup)
+    await message.answer("Click the button to manage the channel", reply_markup=reply_markup)
 
 
 def _get_channel_keyboard(channel_field: Channel) -> InlineKeyboardMarkup:
