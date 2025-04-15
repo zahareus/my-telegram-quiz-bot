@@ -17,8 +17,8 @@ class ChannelEditorService:
         self.user_service = UserService(session)
         self.logger = logging.getLogger(__name__)
 
-    async def get_by_channel_id(self, channel_id: str) -> List[User]:
-        channel_field: Channel = await self.chat_service.get_by_channel_id(channel_id)
+    async def get_by_channel(self, channel_instance: str | Channel) -> List[User]:
+        channel_field: Channel = await self._get_channel_field(channel_instance)
         if channel_field is None:
             return []
         channel_editors: List[User] = await self.channel_editor_repository.get_by_channel_uuid(channel_field.id)
@@ -58,3 +58,9 @@ class ChannelEditorService:
             return None
 
         await self.channel_editor_repository.create(channel_field.id, user_field.id)
+
+    async def remove_editor(self, channel_id: UUID, user_id: UUID) -> None:
+        channel_editor = await self.channel_editor_repository.get_by_channel_and_user(channel_id, user_id)
+        if channel_editor is None:
+            return
+        await self.session.delete(channel_editor)

@@ -54,3 +54,7 @@ class ChannelService:
     async def get_active(self) -> List[Channel]:
         channels = await self.channel_repository.get_active()
         return channels
+
+    async def get_daily(self) -> List[Channel]:
+        channels = await self.channel_repository.get_daily()
+        return channels

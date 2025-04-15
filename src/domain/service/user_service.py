@@ -28,6 +28,12 @@ class UserService:
                 user_id=str(message.chat.id),
                 username=username
             )
+        else:
+            if user_field.username is None:
+                if message.chat.username:
+                    user_field.username = message.chat.username
+                elif message.chat.title:
+                    user_field.username = message.chat.title
         return user_field
 
     async def get_admins_ids(self):
@@ -41,4 +47,13 @@ class UserService:
 
     async def get_by_user_id(self, user_id: str) -> User | None:
         user_field = await self.user_repository.get_by_user_id(user_id)
+        return user_field
+
+    async def get_or_create_user(self, user_id: str) -> User | None:
+        user_field = await self.user_repository.get_by_user_id(user_id)
+        if user_field is None:
+            user_field = await self.user_repository.create(
+                user_id=user_id,
+                username=None
+            )
         return user_field
