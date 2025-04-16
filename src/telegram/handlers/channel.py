@@ -148,5 +148,5 @@ async def handle_deactivate_callback(call: CallbackQuery, callback_data: Deactiv
     if len(active_channels) == 0:
         await call.message.answer("❌ No active channels found.\nPress /share to add a channel.")
         return
-    await call.message.message.answer("Click the button to add channel", reply_markup=reply_markup)
+    await call.message.answer("Click the button to add channel", reply_markup=reply_markup)
 

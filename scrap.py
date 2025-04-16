@@ -34,6 +34,7 @@ async def get_info(session: AsyncSession):
             await bot.send_message(user_field.user_id,
                                    f"🔄 Daily update for {channel_field.channel_title or 'Unknown channel'}")
             await bot.send_message(user_field.user_id, summary_result)
+        await asyncio.sleep(60)
 
 
 if __name__ == "__main__":
