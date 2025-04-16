@@ -21,6 +21,8 @@ async def get_info(session: AsyncSession):
     for channel_field in await channel_service.get_daily():
         channel_id = channel_field.channel_id
         messages_list: List[List[str]] = await message_service.get_past_day_messages(str(channel_id))
+        if len(messages_list) == 0:
+            continue
         summary_text: str = "\n".join([f"[post]\n[link: {link}]\n{text}\n" for text, link in messages_list])
         summary_text: str = message_service.summarize_text(summary_text)
 
