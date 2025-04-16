@@ -5,6 +5,7 @@ from aiogram.types import CallbackQuery
 
 cancel_router = Router()
 
+
 @cancel_router.callback_query(CancelCallback.filter())
 async def cancel(call: CallbackQuery, state: FSMContext):
     await state.clear()
