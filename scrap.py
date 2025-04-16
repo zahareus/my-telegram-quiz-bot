@@ -19,6 +19,7 @@ async def get_info(session: AsyncSession):
     channel_service = ChannelService(session)
 
     for channel_field in await channel_service.get_daily():
+        logging.info(f"Scrap update for {channel_field.channel_title or 'Unknown channel'}")
         channel_id = channel_field.channel_id
         messages_list: List[List[str]] = await message_service.get_past_day_messages(str(channel_id))
         if len(messages_list) == 0:
