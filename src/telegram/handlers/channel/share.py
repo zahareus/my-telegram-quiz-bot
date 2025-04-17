@@ -10,6 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 share_router = Router()
 
+
 def _get_share_keyboard() -> ReplyKeyboardMarkup:
     builder = ReplyKeyboardBuilder()
 
@@ -23,6 +24,7 @@ def _get_share_keyboard() -> ReplyKeyboardMarkup:
     )
     builder.adjust(1)
     return builder.as_markup(resize_keyboard=True, one_time_keyboard=True)
+
 
 @share_router.message(Command("share"), F.chat.type == "private")
 @session_wrap

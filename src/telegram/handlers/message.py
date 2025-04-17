@@ -4,10 +4,10 @@ from aiogram.types import Message
 from src.domain import MessageService, ChannelService, session_wrap
 from sqlalchemy.ext.asyncio import AsyncSession
 
-default_router = Router()
+post_router = Router()
 
 
-@default_router.channel_post()
+@post_router.channel_post()
 @session_wrap
 async def save_message(message: Message, session: AsyncSession):
     channel_service = ChannelService(session)

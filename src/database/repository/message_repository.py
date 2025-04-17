@@ -33,11 +33,11 @@ class MessageRepository:
             f"Message {message.id} created (chat_id: {message.channel_id}, message_id: {message.message_id}), id: {message.id}")
         return await self.get_by_id(message.id)
 
-    async def get_by_chat_uuid(self, channel_uuid: UUID, all_after: datetime.datetime = None) -> List[Message] | None:
+    async def get_by_chat_uuid(self, channel_uuid: UUID, all_after: datetime.datetime = None) -> List[Message]:
         if all_after is not None:
             stmt = select(Message).where(Message.channel_id == channel_uuid, Message.timestamp > all_after)
         else:
             stmt = select(Message).where(Message.channel_id == channel_uuid)
         result = await self.session.scalars(stmt)
         messages = list(result.all())
-        return messages if messages else None
+        return messages
