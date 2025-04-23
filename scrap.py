@@ -26,6 +26,8 @@ async def get_info(session: AsyncSession):
             continue
         summary_text: str = "\n".join([f"[post]\n[link: {link}]\n{text}\n" for text, link in messages_list])
         summary_text: str = message_service.summarize_text(summary_text)
+        if summary_text is None:
+            continue
 
         today_date = (datetime.datetime.now(tz=None)).date()
         summary_result = configuration.settings.update_text.format(today_date=today_date) + "\n\n" + summary_text
