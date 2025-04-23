@@ -11,6 +11,7 @@ import os
 import requests
 import json
 from google import genai
+from google.genai.errors import ClientError
 
 
 class MessageService:
@@ -63,46 +64,51 @@ class MessageService:
         return messages_text
 
     def summarize_text(self, text: str) -> str | None:
-        response = self.client.models.generate_content(
-            model="gemini-2.5-flash-preview-04-17",
-            contents=[
-                configuration.prompt.system_content.format(emoji=configuration.emoji_map.map),
-                configuration.prompt.user_content.format(text=text)
-            ]
+        try:
+            response = self.client.models.generate_content(
+                model="gemini-2.5-flash-preview-04-17",
+                contents=[
+                    configuration.prompt.system_content.format(emoji=configuration.emoji_map.map),
+                    configuration.prompt.user_content.format(text=text)
+                ]
+            )
+            content = response.text
+            return content
+        except genai.errors.ClientError:
+            logging.warning(f"Gemini client error, skipping. Trying openrouter.")
+
+        response = requests.post(
+            url="https://openrouter.ai/api/v1/chat/completions",
+            headers={
+                "Authorization": f"Bearer {environments.model.openrouter}",
+            },
+            data=json.dumps({
+                "model": "deepseek/deepseek-chat-v3-0324:free",
+                "messages": [
+                    {
+                        "role": "system",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": configuration.prompt.system_content.format(emoji=configuration.emoji_map.map),
+                            }
+                        ]
+                    },
+                    {
+                        "role": "user",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": configuration.prompt.user_content.format(text=text),
+                            }
+                        ]
+                    }
+                ]
+            })
         )
-        # response = requests.post(
-        #     url="https://openrouter.ai/api/v1/chat/completions",
-        #     headers={
-        #         "Authorization": f"Bearer {environments.model.token}",
-        #     },
-        #     data=json.dumps({
-        #         "model": "google/gemini-2.0-flash-thinking-exp:free",
-        #         "messages": [
-        #             {
-        #                 "role": "system",
-        #                 "content": [
-        #                     {
-        #                         "type": "text",
-        #                         "text": configuration.prompt.system_content.format(emoji=configuration.emoji_map.map),
-        #                     }
-        #                 ]
-        #             },
-        #             {
-        #                 "role": "user",
-        #                 "content": [
-        #                     {
-        #                         "type": "text",
-        #                         "text": configuration.prompt.user_content.format(text=text),
-        #                     }
-        #                 ]
-        #             }
-        #         ]
-        #     })
-        # )
 
         try:
-            # content = response.json()["choices"][0]["message"]["content"]
-            content = response.text
+            content = response.json()["choices"][0]["message"]["content"]
             return content
         except KeyError:
             self.logger.error(f"Error in response format from OpenRouter API, response: {response}")

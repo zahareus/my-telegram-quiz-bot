@@ -30,6 +30,7 @@ class Database:
 @dataclass
 class AiModel:
     token: str
+    openrouter: str
 
 
 @dataclass
@@ -80,7 +81,8 @@ def load_environ() -> Environ:
             password=get_environ('DB_PASSWORD', default='pgAdminPassword')
         ),
         model=AiModel(
-            token=get_environ('GEMINI_TOKEN')
+            token=get_environ('GEMINI_TOKEN'),
+            openrouter=get_environ('OPENROUTER'),
         ),
         dev_mode=bool(int(get_environ('DEV_MODE', default=1)))
     )
