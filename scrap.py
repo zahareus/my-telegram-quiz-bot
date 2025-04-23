@@ -31,11 +31,12 @@ async def get_info(session: AsyncSession):
         summary_result = configuration.settings.update_text.format(today_date=today_date) + "\n\n" + summary_text
 
         user_fields: List[User] = await editor_service.get_by_channel(channel_field)
-        for user_field in user_fields:
-            await bot.send_message(user_field.user_id,
-                                   f"🔄 Daily update for {channel_field.channel_title or 'Unknown channel'}")
-            await bot.send_message(user_field.user_id, summary_result)
-        await asyncio.sleep(60)
+        logging.info(summary_result)
+        # for user_field in user_fields:
+        #     await bot.send_message(user_field.user_id,
+        #                            f"🔄 Daily update for {channel_field.channel_title or 'Unknown channel'}")
+        #     await bot.send_message(user_field.user_id, summary_result)
+        # await asyncio.sleep(60)
 
 
 if __name__ == "__main__":
