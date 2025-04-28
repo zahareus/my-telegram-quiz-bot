@@ -21,6 +21,7 @@ class Settings:
     channel_id: int
     default_tz: str
     update_text: str
+    weekly_text: str
 
 
 @dataclass
@@ -76,7 +77,8 @@ def load_config():
             date_format=get_config(configuration_file, "date_format", "SETTINGS", default="%Y-%m-%d"),
             channel_id=int(get_config(configuration_file, "channel_id", "SETTINGS")),
             default_tz=get_config(configuration_file, "default_tz", "SETTINGS"),
-            update_text=get_config(configuration_file, "update_text", "SETTINGS")
+            update_text=get_config(configuration_file, "update_text", "SETTINGS"),
+            weekly_text=get_config(configuration_file, "weekly_text", "SETTINGS")
         ),
         skip=SkipParts(
             parts=get_config(configuration_file, "skip_parts", "SKIP_PARTS", default="")

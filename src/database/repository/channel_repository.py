@@ -39,3 +39,9 @@ class ChannelRepository:
         result = await self.session.scalars(stmt)
         channels = list(result.all())
         return channels
+
+    async def get_weekly(self) -> List[Channel]:
+        stmt = select(Channel).where(Channel.is_weekly == True)
+        result = await self.session.scalars(stmt)
+        channels = list(result.all())
+        return channels

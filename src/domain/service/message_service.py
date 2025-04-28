@@ -36,9 +36,9 @@ class MessageService:
             timestamp=message.date
         )
 
-    async def get_past_day_messages(self, channel_id: str) -> List[List[str]]:
+    async def get_past_messages(self, channel_id: str, days: int = 1) -> List[List[str]]:
         channel_field = await self.channel_service.get_by_channel_id(channel_id)
-        yesterday_time = datetime.datetime.now(tz=None) - datetime.timedelta(days=1)
+        yesterday_time = datetime.datetime.now(tz=None) - datetime.timedelta(days=days)
         messages_list = await self.message_repository.get_by_chat_uuid(
             channel_uuid=channel_field.id,
             all_after=yesterday_time
