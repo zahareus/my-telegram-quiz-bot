@@ -7,9 +7,11 @@ from config import configuration, environments
 import datetime
 from aiogram.types import Message as tgMessage
 from sqlalchemy.ext.asyncio import AsyncSession
-
+import os
 import requests
 import json
+from google import genai
+from google.genai.errors import ClientError
 
 
 class MessageService:
@@ -18,6 +20,7 @@ class MessageService:
         self.message_repository = MessageRepository(session)
         self.channel_service = ChannelService(session)
         self.logger = logging.getLogger(__name__)
+        self.client = genai.Client(api_key=environments.model.token)
 
     async def create(self, message: tgMessage) -> None:
         if message.text is None and message.caption is None:
@@ -28,13 +31,14 @@ class MessageService:
 
         channel_field = await self.channel_service.get_or_create_message(message)
         if channel_field is None:
-            return
+            return None
         await self.message_repository.create(
             message_id=str(message.message_id),
             message_text=message_text,
             channel_uuid=channel_field.id,
             timestamp=message.date
         )
+        return None
 
     async def get_past_messages(self, channel_id: str, days: int = 1) -> List[List[str]]:
         channel_field = await self.channel_service.get_by_channel_id(channel_id)
@@ -60,14 +64,26 @@ class MessageService:
         return messages_text
 
     def summarize_text(self, text: str) -> str | None:
-        # time.sleep(5)
+        try:
+            response = self.client.models.generate_content(
+                model="gemini-2.5-flash-preview-04-17",
+                contents=[
+                    configuration.prompt.system_content.format(emoji=configuration.emoji_map.map),
+                    configuration.prompt.user_content.format(text=text)
+                ]
+            )
+            content = response.text
+            return content
+        except genai.errors.ClientError:
+            logging.warning(f"Gemini client error, skipping. Trying openrouter.")
+
         response = requests.post(
             url="https://openrouter.ai/api/v1/chat/completions",
             headers={
-                "Authorization": f"Bearer {environments.model.token}",
+                "Authorization": f"Bearer {environments.model.openrouter}",
             },
             data=json.dumps({
-                "model": "google/gemini-2.5-pro-exp-03-25:free",
+                "model": "deepseek/deepseek-chat-v3-0324:free",
                 "messages": [
                     {
                         "role": "system",
@@ -95,7 +111,7 @@ class MessageService:
             content = response.json()["choices"][0]["message"]["content"]
             return content
         except KeyError:
-            self.logger.error(f"Error in response format from OpenRouter API, response: {response.json()}")
+            self.logger.error(f"Error in response format from OpenRouter API, response: {response}")
             return None
 
     # async def get_user(self) -> User:
