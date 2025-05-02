@@ -37,6 +37,6 @@ async def get_info(session: AsyncSession):
         await asyncio.sleep(60)
 
 
-if __name__ == "__main__":
-    logging.info("Weekly scrap update")
-    asyncio.run(get_info())
+# if __name__ == "__main__":
+    # logging.info("Weekly scrap update")
+    # asyncio.run(get_info())
