@@ -1,2 +1,2 @@
 0 15 * * * cd /usr/src/summarize_bot && /usr/src/summarize_bot/.venv/bin/python3 /usr/src/summarize_bot/scrap.py >> /var/log/cron.log 2>&1
-0 11 * * Sun cd /usr/src/summarize_bot && /usr/src/summarize_bot/.venv/bin/python3 /usr/src/summarize_bot/scrap_weekly.py >> /var/log/cron.log 2>&1\
+0 11 * * Sun cd /usr/src/summarize_bot && /usr/src/summarize_bot/.venv/bin/python3 /usr/src/summarize_bot/scrap_weekly.py >> /var/log/cron.log 2>&1
