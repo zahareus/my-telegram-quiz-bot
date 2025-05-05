@@ -21,10 +21,10 @@ def _get_channel_keyboard(channel_field: Channel) -> InlineKeyboardMarkup:
         text="👥 Change editors",
         callback_data=EditorCallback(channel_id=channel_field.channel_id).pack()
     )
-    builder.button(
-        text=("✅ " if channel_field.is_daily else "❎ ") + "Daily",
-        callback_data=DailyCallback(channel_id=channel_field.channel_id, is_daily=not channel_field.is_daily).pack()
-    )
+    # builder.button(
+    #     text=("✅ " if channel_field.is_daily else "❎ ") + "Daily",
+    #     callback_data=DailyCallback(channel_id=channel_field.channel_id, is_daily=not channel_field.is_daily).pack()
+    # )
     builder.button(
         text=("✅ " if channel_field.is_weekly else "❎ ") + "Weekly",
         callback_data=WeeklyCallback(channel_id=channel_field.channel_id, is_weekly=not channel_field.is_weekly).pack()
