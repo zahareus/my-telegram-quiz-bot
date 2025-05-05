@@ -42,5 +42,5 @@ async def get_info(session: AsyncSession):
 
 
 if __name__ == "__main__":
-    logging.info("Daily scrap update")
-    asyncio.run(get_info())
+    logging.info("Daily scrap update DISABLED")
+    # asyncio.run(get_info())
