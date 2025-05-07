@@ -12,7 +12,7 @@ class Channel(Base):
     channel_id: Mapped[str] = mapped_column(unique=True)
     channel_title: Mapped[str] = mapped_column(nullable=True)
     is_daily: Mapped[bool] = mapped_column(default=False)
-    is_weekly: Mapped[bool] = mapped_column(default=False)
+    is_weekly: Mapped[bool] = mapped_column(default=True)
     is_active: Mapped[bool] = mapped_column(default=False)
 
     def __repr__(self) -> str:

@@ -35,13 +35,13 @@ class ChannelRepository:
         return channels
 
     async def get_daily(self) -> List[Channel]:
-        stmt = select(Channel).where(Channel.is_daily == True)
+        stmt = select(Channel).where(Channel.is_daily == True, Channel.is_active == True)
         result = await self.session.scalars(stmt)
         channels = list(result.all())
         return channels
 
     async def get_weekly(self) -> List[Channel]:
-        stmt = select(Channel).where(Channel.is_weekly == True)
+        stmt = select(Channel).where(Channel.is_weekly == True, Channel.is_active == True)
         result = await self.session.scalars(stmt)
         channels = list(result.all())
         return channels

@@ -57,3 +57,7 @@ class UserService:
                 username=None
             )
         return user_field
+
+    async def get_by_username(self, username: str) -> User | None:
+        user_field = await self.user_repository.get_by_username(username)
+        return user_field

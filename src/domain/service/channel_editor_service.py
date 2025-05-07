@@ -58,6 +58,7 @@ class ChannelEditorService:
             return None
 
         await self.channel_editor_repository.create(channel_field.id, user_field.id)
+        return None
 
     async def remove_editor(self, channel_id: UUID, user_id: UUID) -> bool:
         channel_editor = await self.channel_editor_repository.get_by_channel_and_user(channel_id, user_id)
