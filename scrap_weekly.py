@@ -24,16 +24,20 @@ async def get_info(session: AsyncSession):
         messages_list: List[List[str]] = await message_service.get_past_messages(str(channel_id), days=7)
         if len(messages_list) == 0:
             continue
-        summary_text: str = "\n".join([f"[post]\n[link: {link}]\n{text}\n" for text, link in messages_list])
+        summary_text: str = "\n".join([f"[link: {link}]\n{text}\n" for text, link in messages_list])
         summary_text: str = message_service.summarize_text(summary_text)
 
         summary_result = configuration.settings.weekly_text + "\n\n" + summary_text
 
         user_fields: List[User] = await editor_service.get_by_channel(channel_field)
-        for user_field in user_fields:
-            await bot.send_message(user_field.user_id,
-                                   f"🔄 Weekly update for {channel_field.channel_title or 'Unknown channel'}")
-            await bot.send_message(user_field.user_id, summary_result)
+        try:
+            for user_field in user_fields:
+                await bot.send_message(user_field.user_id,
+                                       f"🔄 Weekly update for {channel_field.channel_title or 'Unknown channel'}")
+                await bot.send_message(user_field.user_id, summary_result)
+        except Exception as e:
+            logging.error(f"Failed to send message:\n{summary_result}\nWith error: {e}")
+            continue
         await asyncio.sleep(60)
 
 
