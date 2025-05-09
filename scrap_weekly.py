@@ -28,6 +28,7 @@ async def get_info(session: AsyncSession):
         summary_text: str = message_service.summarize_text(summary_text)
 
         summary_result = configuration.settings.weekly_text + "\n\n" + summary_text
+        logging.info(f"Weekly update done for {channel_field.channel_title or 'Unknown channel'}:\n{summary_result}")
 
         user_fields: List[User] = await editor_service.get_by_channel(channel_field)
         try:
