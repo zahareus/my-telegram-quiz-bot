@@ -26,6 +26,8 @@ async def get_info(session: AsyncSession):
             continue
         summary_text: str = "\n".join([f"[link: {link}]\n{text}\n" for text, link in messages_list])
         summary_text: str = message_service.summarize_text(summary_text)
+        if summary_text is None:
+            continue
 
         summary_result = configuration.settings.weekly_text + "\n\n" + summary_text
         summary_result = summary_result.replace("//tme/c", "//t.me/c")
